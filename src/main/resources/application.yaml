@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: talento_tech_proyecto
+  datasource:
+    url: jdbc:mysql://localhost:3306/talento_tech_proyecto_db
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    jpa:
+      hibernate:
+        ddl-auto: update # o 'create', 'create-drop', 'validate', 'none'
+      show-sql: true
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL8Dialect
+          format_sql: true
