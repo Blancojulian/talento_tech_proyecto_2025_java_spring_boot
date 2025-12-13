@@ -1,13 +1,9 @@
 package com.techlab.talento_tech_proyecto.controller;
 
-import com.techlab.talento_tech_proyecto.dto.CreatePedidoDto;
-import com.techlab.talento_tech_proyecto.dto.CreateProductoDto;
-import com.techlab.talento_tech_proyecto.dto.ProductoDto;
-import com.techlab.talento_tech_proyecto.dto.UpdatePedidoDto;
-import com.techlab.talento_tech_proyecto.dto.UpdateProductoDto;
-import com.techlab.talento_tech_proyecto.entity.Pedido;
+import com.techlab.talento_tech_proyecto.dto.request.CreatePedidoDto;
+import com.techlab.talento_tech_proyecto.dto.response.PedidoDto;
+import com.techlab.talento_tech_proyecto.dto.request.UpdatePedidoDto;
 import com.techlab.talento_tech_proyecto.service.PedidoService;
-import com.techlab.talento_tech_proyecto.service.ProductoService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -34,7 +30,7 @@ public class PedidoController {
 
 
   @GetMapping()
-  public List<Pedido> getAll(@RequestParam(required = false, defaultValue = "") String nombre) {
+  public List<PedidoDto> getAll(@RequestParam(required = false, defaultValue = "") String nombre) {
     return pedidoService.getAll(nombre);
   }
 

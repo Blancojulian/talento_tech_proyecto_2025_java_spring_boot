@@ -1,4 +1,4 @@
-package com.techlab.talento_tech_proyecto.dto;
+package com.techlab.talento_tech_proyecto.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.techlab.talento_tech_proyecto.dto;
+package com.techlab.talento_tech_proyecto.dto.response;
 
 import com.techlab.talento_tech_proyecto.entity.Producto;
 import lombok.AllArgsConstructor;

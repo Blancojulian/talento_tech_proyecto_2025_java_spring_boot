@@ -1,7 +1,7 @@
 package com.techlab.talento_tech_proyecto.exception;
 
-import com.techlab.talento_tech_proyecto.dto.ErrorDto;
-import com.techlab.talento_tech_proyecto.dto.ErrorValidationDto;
+import com.techlab.talento_tech_proyecto.dto.response.ErrorDto;
+import com.techlab.talento_tech_proyecto.dto.response.ErrorValidationDto;
 import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> personaNotFound(NotFoundException ex) {
+    public ResponseEntity<?> notFound(NotFoundException ex) {
         return new ResponseEntity<>(new ErrorDto(HttpStatus.NOT_FOUND.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<?> stockInsuficiente(NotFoundException ex) {
+      return new ResponseEntity<>(new ErrorDto(HttpStatus.CONFLICT.value(), ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 //    @ExceptionHandler(ClonException.class)
 //    public ResponseEntity<?> personaClonada(ClonException ex){

@@ -1,4 +1,4 @@
-package com.techlab.talento_tech_proyecto.dto;
+package com.techlab.talento_tech_proyecto.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CreateLineaPedidoDto {
-  private long productoId;
-  private int cantidad;
+public class ErrorDto {
+
+  private int status;
+  private String error;
 }

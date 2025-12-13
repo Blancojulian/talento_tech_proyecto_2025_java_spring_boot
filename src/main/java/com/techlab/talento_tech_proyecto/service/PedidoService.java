@@ -1,8 +1,10 @@
 package com.techlab.talento_tech_proyecto.service;
 
-import com.techlab.talento_tech_proyecto.dto.CreateLineaPedidoDto;
-import com.techlab.talento_tech_proyecto.dto.CreatePedidoDto;
-import com.techlab.talento_tech_proyecto.dto.UpdatePedidoDto;
+import com.techlab.talento_tech_proyecto.dto.request.CreateLineaPedidoDto;
+import com.techlab.talento_tech_proyecto.dto.request.CreatePedidoDto;
+import com.techlab.talento_tech_proyecto.dto.response.LineaPedidoDto;
+import com.techlab.talento_tech_proyecto.dto.response.PedidoDto;
+import com.techlab.talento_tech_proyecto.dto.request.UpdatePedidoDto;
 import com.techlab.talento_tech_proyecto.entity.LineaPedido;
 import com.techlab.talento_tech_proyecto.entity.Pedido;
 import com.techlab.talento_tech_proyecto.exception.NotFoundException;
@@ -12,6 +14,7 @@ import com.techlab.talento_tech_proyecto.repository.PedidoRepository;
 import com.techlab.talento_tech_proyecto.repository.ProductoRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,25 +30,30 @@ public class PedidoService {
     this.productoRepo = productoRepo;
   }
 
-  public List<Pedido> getAll(String nombre) {
+  public List<PedidoDto> getAll(String nombre) {
+    List<Pedido> lista;
     if (!nombre.isBlank()) {
-      return pedidoRepo.findByNombreClienteContainingIgnoreCase(nombre);
+      lista = pedidoRepo.findByNombreClienteContainingIgnoreCase(nombre);
+    } else {
+      lista = pedidoRepo.findAll();
     }
-    return pedidoRepo.findAll();
+    return lista.stream().map((p)->this.mapearPedido(p))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public Pedido get(Long id) {
-    return pedidoRepo.findById(id)
+  public PedidoDto get(Long id) {
+    var p = pedidoRepo.findById(id)
         .orElseThrow(() -> new NotFoundException("Pedido no encontrado"));
+    return this.mapearPedido(p);
   }
 
-  public Pedido create(CreatePedidoDto pedidoDto) {
+  public PedidoDto create(CreatePedidoDto pedidoDto) {
     var pedido = new Pedido(pedidoDto);
     var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), true);
     pedidoRepo.save(pedido);
     lineas.forEach((lp)->lp.setPedido(pedido));
     lineaPedidoRepo.saveAll(lineas);
-    return pedido;
+    return this.mapearPedido(pedido);
     //ver si funciona
 //    var pedido = new Pedido(pedidoDto);
 //    var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), true);
@@ -96,5 +104,17 @@ public class PedidoService {
 
   public void delete(Long id) {
     this.pedidoRepo.deleteById(id);
+  }
+  private PedidoDto mapearPedido(Pedido pedido){
+    var pedidoDto = new PedidoDto();
+    pedidoDto.setId(pedido.getId());
+    pedidoDto.setNombreCliente(pedido.getNombreCliente());
+    pedidoDto.setFecha(pedido.getFecha());
+    pedidoDto.setEstado(pedido.getEstado());
+    var lineas = pedido.getLineasPedido().stream()
+        .map((lp)->new LineaPedidoDto(lp))
+        .collect(Collectors.toCollection(ArrayList::new));
+    pedidoDto.setLineasPedido(lineas);
+    return pedidoDto;
   }
 }

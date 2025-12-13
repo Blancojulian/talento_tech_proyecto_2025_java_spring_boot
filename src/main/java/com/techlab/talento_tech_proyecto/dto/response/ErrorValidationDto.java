@@ -1,5 +1,6 @@
-package com.techlab.talento_tech_proyecto.dto;
+package com.techlab.talento_tech_proyecto.dto.response;
 
+import java.util.HashMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ErrorDto {
+public class ErrorValidationDto {
 
   private int status;
-  private String error;
+  private HashMap<String, String> errores;
 }

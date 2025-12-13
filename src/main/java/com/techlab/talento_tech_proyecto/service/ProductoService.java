@@ -1,9 +1,9 @@
 package com.techlab.talento_tech_proyecto.service;
 
 
-import com.techlab.talento_tech_proyecto.dto.CreateProductoDto;
-import com.techlab.talento_tech_proyecto.dto.ProductoDto;
-import com.techlab.talento_tech_proyecto.dto.UpdateProductoDto;
+import com.techlab.talento_tech_proyecto.dto.request.CreateProductoDto;
+import com.techlab.talento_tech_proyecto.dto.response.ProductoDto;
+import com.techlab.talento_tech_proyecto.dto.request.UpdateProductoDto;
 import com.techlab.talento_tech_proyecto.entity.Producto;
 import com.techlab.talento_tech_proyecto.exception.NotFoundException;
 import com.techlab.talento_tech_proyecto.repository.ProductoRepository;

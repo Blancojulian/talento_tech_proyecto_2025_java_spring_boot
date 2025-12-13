@@ -1,7 +1,6 @@
 package com.techlab.talento_tech_proyecto.entity;
 
-import com.techlab.talento_tech_proyecto.dto.CreateProductoDto;
-import com.techlab.talento_tech_proyecto.dto.ProductoDto;
+import com.techlab.talento_tech_proyecto.dto.request.CreateProductoDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

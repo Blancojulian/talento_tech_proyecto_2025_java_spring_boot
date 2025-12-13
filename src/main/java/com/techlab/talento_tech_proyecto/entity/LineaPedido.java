@@ -1,8 +1,6 @@
 package com.techlab.talento_tech_proyecto.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.techlab.talento_tech_proyecto.dto.CreateLineaPedidoDto;
-import com.techlab.talento_tech_proyecto.dto.CreatePedidoDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
