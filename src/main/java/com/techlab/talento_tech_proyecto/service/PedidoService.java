@@ -1,9 +1,16 @@
 package com.techlab.talento_tech_proyecto.service;
 
+import com.techlab.talento_tech_proyecto.dto.CreateLineaPedidoDto;
+import com.techlab.talento_tech_proyecto.dto.CreatePedidoDto;
+import com.techlab.talento_tech_proyecto.dto.UpdatePedidoDto;
+import com.techlab.talento_tech_proyecto.entity.LineaPedido;
 import com.techlab.talento_tech_proyecto.entity.Pedido;
 import com.techlab.talento_tech_proyecto.exception.NotFoundException;
+import com.techlab.talento_tech_proyecto.exception.StockInsuficienteException;
 import com.techlab.talento_tech_proyecto.repository.LineaPedidoRepository;
 import com.techlab.talento_tech_proyecto.repository.PedidoRepository;
+import com.techlab.talento_tech_proyecto.repository.ProductoRepository;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -12,38 +19,74 @@ public class PedidoService {
 
   private final PedidoRepository pedidoRepo;
   private final LineaPedidoRepository lineaPedidoRepo;
+  private final ProductoRepository productoRepo;
 
-  public PedidoService(PedidoRepository pedidoRepo, LineaPedidoRepository lineaPedidoRepo) {
+  public PedidoService(PedidoRepository pedidoRepo, LineaPedidoRepository lineaPedidoRepo, ProductoRepository productoRepo) {
     this.pedidoRepo = pedidoRepo;
     this.lineaPedidoRepo = lineaPedidoRepo;
+    this.productoRepo = productoRepo;
   }
 
-  public List<Pedido> getAll() {
+  public List<Pedido> getAll(String nombre) {
+    if (!nombre.isBlank()) {
+      return pedidoRepo.findByNombreClienteContainingIgnoreCase(nombre);
+    }
     return pedidoRepo.findAll();
   }
 
-  public Pedido getById(Long id) {
+  public Pedido get(Long id) {
     return pedidoRepo.findById(id)
         .orElseThrow(() -> new NotFoundException("Pedido no encontrado"));
   }
 
-  public Pedido create(Pedido pedido) {
-    // Asegurar relaciones bidireccionales
-    pedido.getLineasPedido().forEach(lp -> lp.setPedido(pedido));
-    return pedidoRepo.save(pedido);
+  public Pedido create(CreatePedidoDto pedidoDto) {
+    var pedido = new Pedido(pedidoDto);
+    var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), true);
+    pedidoRepo.save(pedido);
+    lineas.forEach((lp)->lp.setPedido(pedido));
+    lineaPedidoRepo.saveAll(lineas);
+    return pedido;
+    //ver si funciona
+//    var pedido = new Pedido(pedidoDto);
+//    var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), true);
+//    pedido.setLineasPedido(lineas);
+//    pedidoRepo.save(pedido);
+//    return pedido;
   }
 
-  public Pedido update(Long id, Pedido pedidoActualizado) {
+  private List<LineaPedido> crearLineasPedido(List<CreateLineaPedidoDto> lineas, boolean controlarStock){
+    List<LineaPedido> lista = new ArrayList<>();
+    lineas.forEach(l->{
+      var producto = this.productoRepo.findById(l.getProductoId())
+          .orElseThrow(()->new NotFoundException("No se encontro el producto " + l.getProductoId()));
+
+      if (controlarStock && l.getCantidad() > producto.getStock()){
+        throw new StockInsuficienteException("Stock insuficiente del producto "+producto.getNombre());
+      }
+      lista.add(new LineaPedido(l.getCantidad(), producto.getPrecio(), producto));
+
+    });
+    return lista;
+  }
+
+  public Pedido update(Long id, UpdatePedidoDto pedidoDto) {
     Pedido existente = pedidoRepo.findById(id)
         .orElseThrow(() -> new NotFoundException("Pedido no encontrado"));
 
-    existente.setNombreCliente(pedidoActualizado.getNombreCliente());
-    existente.setFecha(pedidoActualizado.getFecha());
-    existente.setEstado(pedidoActualizado.getEstado());
+    var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), false);
 
-    // Actualizar lineas
+    if (pedidoDto.getNombreCliente() != null && !pedidoDto.getNombreCliente().isBlank()) {
+      existente.setNombreCliente(pedidoDto.getNombreCliente());
+    }
+    if (pedidoDto.getFecha() != null) {
+      existente.setFecha(pedidoDto.getFecha());
+    }
+//    if (pedidoDto.getEstado() != null && !pedidoDto.getEstado().name()) {
+//      existente.setEstado(pedidoDto.getEstado());
+//    }
+    this.lineaPedidoRepo.deleteAll(existente.getLineasPedido());
     existente.getLineasPedido().clear();
-    pedidoActualizado.getLineasPedido().forEach(lp -> {
+    lineas.forEach(lp -> {
       lp.setPedido(existente);
       existente.getLineasPedido().add(lp);
     });

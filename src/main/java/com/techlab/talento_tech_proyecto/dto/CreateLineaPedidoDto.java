@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class CreateLineaPedidoDto {
   private long productoId;
-  private double precio;
   private int cantidad;
 }

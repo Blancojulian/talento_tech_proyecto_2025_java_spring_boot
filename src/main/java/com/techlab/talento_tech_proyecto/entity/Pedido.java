@@ -1,5 +1,7 @@
 package com.techlab.talento_tech_proyecto.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.techlab.talento_tech_proyecto.dto.CreatePedidoDto;
 import com.techlab.talento_tech_proyecto.dto.ProductoDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,5 +41,9 @@ public class Pedido {
       CascadeType.REMOVE}, orphanRemoval = true)
   private List<LineaPedido> lineasPedido = new ArrayList<>();
 
-
+  public Pedido(CreatePedidoDto p){
+    this.nombreCliente = p.getNombreCliente();
+    this.estado = EstadoPedido.PENDIENTE;
+    this.fecha = LocalDateTime.now();
+  }
 }
