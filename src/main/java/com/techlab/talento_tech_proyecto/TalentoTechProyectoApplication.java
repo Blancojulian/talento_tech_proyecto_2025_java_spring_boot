@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TalentoTechProyectoApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TalentoTechProyectoApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(TalentoTechProyectoApplication.class, args);
+  }
 
 }

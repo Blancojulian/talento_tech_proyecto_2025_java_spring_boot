@@ -1,10 +1,17 @@
 spring:
   application:
     name: talento_tech_proyecto
+    security:
+      jwt:
+        #        secret-key: { JWT_SECRET_KEY }
+        secret-key: ${JWT_SECRET_KEY}
+        expiration: 86400000
+        refresh-token:
+          expiration: 604800000
   datasource:
-    url: jdbc:mysql://localhost:3306/talento_tech_proyecto_db
-    username: root
-    password: 1234
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

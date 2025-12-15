@@ -24,7 +24,8 @@ public class PedidoService {
   private final LineaPedidoRepository lineaPedidoRepo;
   private final ProductoRepository productoRepo;
 
-  public PedidoService(PedidoRepository pedidoRepo, LineaPedidoRepository lineaPedidoRepo, ProductoRepository productoRepo) {
+  public PedidoService(PedidoRepository pedidoRepo, LineaPedidoRepository lineaPedidoRepo,
+      ProductoRepository productoRepo) {
     this.pedidoRepo = pedidoRepo;
     this.lineaPedidoRepo = lineaPedidoRepo;
     this.productoRepo = productoRepo;
@@ -37,7 +38,7 @@ public class PedidoService {
     } else {
       lista = pedidoRepo.findAll();
     }
-    return lista.stream().map((p)->this.mapearPedido(p))
+    return lista.stream().map((p) -> this.mapearPedido(p))
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -51,7 +52,7 @@ public class PedidoService {
     var pedido = new Pedido(pedidoDto);
     var lineas = this.crearLineasPedido(pedidoDto.getLineasPedido(), true);
     pedidoRepo.save(pedido);
-    lineas.forEach((lp)->lp.setPedido(pedido));
+    lineas.forEach((lp) -> lp.setPedido(pedido));
     lineaPedidoRepo.saveAll(lineas);
     return this.mapearPedido(pedido);
     //ver si funciona
@@ -62,14 +63,17 @@ public class PedidoService {
 //    return pedido;
   }
 
-  private List<LineaPedido> crearLineasPedido(List<CreateLineaPedidoDto> lineas, boolean controlarStock){
+  private List<LineaPedido> crearLineasPedido(List<CreateLineaPedidoDto> lineas,
+      boolean controlarStock) {
     List<LineaPedido> lista = new ArrayList<>();
-    lineas.forEach(l->{
+    lineas.forEach(l -> {
       var producto = this.productoRepo.findById(l.getProductoId())
-          .orElseThrow(()->new NotFoundException("No se encontro el producto " + l.getProductoId()));
+          .orElseThrow(
+              () -> new NotFoundException("No se encontro el producto " + l.getProductoId()));
 
-      if (controlarStock && l.getCantidad() > producto.getStock()){
-        throw new StockInsuficienteException("Stock insuficiente del producto "+producto.getNombre());
+      if (controlarStock && l.getCantidad() > producto.getStock()) {
+        throw new StockInsuficienteException(
+            "Stock insuficiente del producto " + producto.getNombre());
       }
       lista.add(new LineaPedido(l.getCantidad(), producto.getPrecio(), producto));
 
@@ -89,15 +93,18 @@ public class PedidoService {
     if (pedidoDto.getFecha() != null) {
       existente.setFecha(pedidoDto.getFecha());
     }
-//    if (pedidoDto.getEstado() != null && !pedidoDto.getEstado().name()) {
-//      existente.setEstado(pedidoDto.getEstado());
-//    }
-    this.lineaPedidoRepo.deleteAll(existente.getLineasPedido());
-    existente.getLineasPedido().clear();
-    lineas.forEach(lp -> {
-      lp.setPedido(existente);
-      existente.getLineasPedido().add(lp);
-    });
+    if (pedidoDto.getEstado() != null) {
+      existente.setEstado(pedidoDto.getEstado());
+    }
+
+    if (!pedidoDto.getLineasPedido().isEmpty()) {
+      this.lineaPedidoRepo.deleteAll(existente.getLineasPedido());
+      existente.getLineasPedido().clear();
+      lineas.forEach(lp -> {
+        lp.setPedido(existente);
+        existente.getLineasPedido().add(lp);
+      });
+    }
 
     return pedidoRepo.save(existente);
   }
@@ -105,14 +112,15 @@ public class PedidoService {
   public void delete(Long id) {
     this.pedidoRepo.deleteById(id);
   }
-  private PedidoDto mapearPedido(Pedido pedido){
+
+  private PedidoDto mapearPedido(Pedido pedido) {
     var pedidoDto = new PedidoDto();
     pedidoDto.setId(pedido.getId());
     pedidoDto.setNombreCliente(pedido.getNombreCliente());
     pedidoDto.setFecha(pedido.getFecha());
     pedidoDto.setEstado(pedido.getEstado());
     var lineas = pedido.getLineasPedido().stream()
-        .map((lp)->new LineaPedidoDto(lp))
+        .map((lp) -> new LineaPedidoDto(lp))
         .collect(Collectors.toCollection(ArrayList::new));
     pedidoDto.setLineasPedido(lineas);
     return pedidoDto;

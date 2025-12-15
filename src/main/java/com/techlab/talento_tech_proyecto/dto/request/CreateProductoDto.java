@@ -17,9 +17,9 @@ public class CreateProductoDto{
   String nombre;
   @Size(min = 2, max = 500)
   String descripcion;
-  @NotEmpty(message = "Debe enviar la categoria del producto")
+  @NotBlank(message = "Debe enviar la categoria del producto")
   String categoria;
-  @NotEmpty(message = "Debe enviar la url de la imagen del producto")
+  @NotBlank(message = "Debe enviar la url de la imagen del producto")
   String urlImg;
   double precio;
   @Min(value = 0, message = "El stock no puede ser un valor negativo")
