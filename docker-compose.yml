@@ -1,0 +1,39 @@
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: talento_tech_proyecto_db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    #    ports:
+    #      - "3306:3306"
+    volumes:
+      - data_sql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u${DB_USER} -p${DB_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    mem_limit: 512m
+    container_name: app
+    restart: always
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    environment:
+      DB_URL: ${DB_URL_CONTAINER}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    #      SECRET_KEY: ${SECRET_KEY}
+    #      LOGIN_START: ${LOGIN_START}
+    ports:
+      - "8080:8080"
+
+volumes:
+  data_sql:
